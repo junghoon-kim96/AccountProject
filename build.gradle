@@ -1,56 +1,39 @@
 plugins {
+  id 'org.springframework.boot' version '2.6.8'
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
   id 'java'
-  id 'application'
-  id 'org.javamodularity.moduleplugin' version '1.8.12'
-  id 'org.openjfx.javafxplugin' version '0.0.13'
-  id 'org.beryx.jlink' version '2.25.0'
 }
 
-group 'com.example'
-version '1.0-SNAPSHOT'
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
 
 repositories {
   mavenCentral()
 }
 
-ext {
-  junitVersion = '5.9.2'
-}
-
-sourceCompatibility = '11'
-targetCompatibility = '11'
-
-tasks.withType(JavaCompile) {
-  options.encoding = 'UTF-8'
-}
-
-application {
-  mainModule = 'com.example.account'
-  mainClass = 'com.example.account.HelloApplication'
-}
-
-javafx {
-  version = '17.0.6'
-  modules = ['javafx.controls', 'javafx.fxml']
-}
-
 dependencies {
-
-  testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
-}
-
-test {
-  useJUnitPlatform()  }
-
-jlink {
-  imageZip = project.file("${buildDir}/distributions/app-${javafx.platform.classifier}.zip")
-  options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-  launcher {
-    name = 'app'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  // redis client
+  implementation 'org.redisson:redisson:3.17.1'
+  // embedded redis
+  implementation('it.ozimov:embedded-redis:0.7.3') {
+    exclude group: "org.slf4j", module: "slf4j-simple"
   }
+  compileOnly 'org.projectlombok:lombok'
+  runtimeOnly 'com.h2database:h2'
+  annotationProcessor 'org.projectlombok:lombok'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-jlinkZip {
-  group = 'distribution'
+tasks.named('test') {
+  useJUnitPlatform()
 }
