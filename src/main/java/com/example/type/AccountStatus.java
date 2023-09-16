@@ -1,4 +1,4 @@
-package com.example.domain;
+package com.example.type;
 
 public enum AccountStatus {
     IN_USE,
