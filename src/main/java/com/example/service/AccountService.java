@@ -6,11 +6,16 @@ import com.example.domain.AccountUser;
 import com.example.exception.AccountException;
 import com.example.repository.AccountRepository;
 import com.example.repository.AccountUserRepository;
+import com.example.type.AccountStatus;
 import com.example.type.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
+import java.time.LocalDateTime;
+
+import static com.example.type.AccountStatus.IN_USE;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +29,22 @@ public class AccountService {
      * 계좌를 저장하고, 그 정보를 넘긴다.
      */
     @Transactional
-    public void createAccount(Long userId, Long initialBalance) {
+    public Account createAccount(Long userId, Long initialBalance) {
         AccountUser accountUser = accountUserRepository.findById(userId)
                 .orElseThrow(() -> new AccountException(ErrorCode.USER_NOT_FOUND));
+
+        String newAccountNumber = accountRepository.findFirstByOrderByIdDesc()
+                .map(account -> (Integer.parseInt(account.getAccountNumber())) + 1 + "")
+                .orElse("1000000000");
+
+        return accountRepository.save(Account.builder()
+                        .accountUser(accountUser)
+                        .accountStatus(IN_USE)
+                        .accountNumber(newAccountNumber)
+                        .balance(initialBalance)
+                        .registeredAt(LocalDateTime.now())
+                        .build()
+        );
     }
 
     @Transactional
