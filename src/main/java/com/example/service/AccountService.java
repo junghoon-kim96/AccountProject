@@ -3,6 +3,7 @@ package com.example.service;
 
 import com.example.domain.Account;
 import com.example.domain.AccountUser;
+import com.example.dto.AccountDto;
 import com.example.exception.AccountException;
 import com.example.repository.AccountRepository;
 import com.example.repository.AccountUserRepository;
@@ -29,7 +30,7 @@ public class AccountService {
      * 계좌를 저장하고, 그 정보를 넘긴다.
      */
     @Transactional
-    public Account createAccount(Long userId, Long initialBalance) {
+    public AccountDto createAccount(Long userId, Long initialBalance) {
         AccountUser accountUser = accountUserRepository.findById(userId)
                 .orElseThrow(() -> new AccountException(ErrorCode.USER_NOT_FOUND));
 
@@ -37,13 +38,14 @@ public class AccountService {
                 .map(account -> (Integer.parseInt(account.getAccountNumber())) + 1 + "")
                 .orElse("1000000000");
 
-        return accountRepository.save(Account.builder()
+        return AccountDto.fromEntity(accountRepository.save(
+                Account.builder()
                         .accountUser(accountUser)
                         .accountStatus(IN_USE)
                         .accountNumber(newAccountNumber)
                         .balance(initialBalance)
                         .registeredAt(LocalDateTime.now())
-                        .build()
+                        .build())
         );
     }
 
