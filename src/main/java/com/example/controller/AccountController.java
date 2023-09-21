@@ -35,7 +35,7 @@ public class AccountController {
 
     @GetMapping("/create-account")
     public String createAccount() {
-        accountService.createAccount();
+
         return "success";
     }
 
