@@ -4,6 +4,7 @@ package com.example.controller;
 import com.example.domain.Account;
 import com.example.dto.AccountDto;
 import com.example.dto.CreateAccount;
+import com.example.dto.DeleteAccount;
 import com.example.service.AccountService;
 import com.example.service.RedisTestService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,17 @@ public class AccountController {
                 accountService.createAccount(
                         request.getUserId(),
                         request.getInitialBalance())
+        );
+    }
+
+    @DeleteMapping("/account")
+    public DeleteAccount.Response DeleteAccount(
+            @RequestBody @Valid DeleteAccount.Request request
+    ) {
+        return DeleteAccount.Response.from(
+                accountService.deleteAccount(
+                        request.getUserId(),
+                        request.getAccountNumber())
         );
     }
 
